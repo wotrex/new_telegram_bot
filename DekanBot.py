@@ -11,7 +11,6 @@ dat = db_client['BohdanBot']['Chats']
 timechat = {}
 
 def mytimer(chatid):
-    # if dat.find_one({'id': chatid})['status'] == 1 and dat.find_one({'id': chatid})['g_status'] == 1:
     if len(dat.find_one({'id': chatid})['mem_to_game']) >= 2:
         game(chatid, dat.find_one({'id': chatid})['mem_to_game'])
         dat.update_one({'id': chatid},{ "$set": { 'mem_to_game': [] } })
@@ -26,13 +25,10 @@ def mytimer(chatid):
 def game(chadid, players):
     players3 = np.zeros((0), dtype = [('name', object),('role', object),('died', object),('count', int), ('money', int)])
     mm = dat.find_one({'id': chadid})['members']
-    existing_player = []
-    for m in mm:
-        existing_player.append(m['name'])
     for p in range(len(players)):
         players3 = np.insert(players3, len(players3),(players[p],None,None,0,0), axis = 0)
-        if players[p] not in existing_player:
-            mm.append({'name': players[p],'wins':0,'kills':0,'lose':0, 'money':0})
+        if  mm.__contains__(players[p]) == False:
+            mm[players[p]] = {'wins':0,'kills':0,'lose':0, 'money':0}
     def storonu():
         for p in range(len(players)):
             players3[p][1] = None
@@ -77,7 +73,7 @@ def game(chadid, players):
     message = ""
     for k in range(len(players)):
         if players3[k][0] != None:
-            message += ("{}%20-%20{}%0A".format(players3[k][0], players3[k][1]))
+            message += ("{} - {} ".format(players3[k][0], players3[k][1]))
     bot.send_message(chadid, message)
     countPlayer = []
     for p in range(len(players)):
@@ -96,22 +92,22 @@ def game(chadid, players):
             rep = random.randint(1,5)
             nonlocal message
             if rep == 1:
-                message += ("{}%20{}%20знищив%20очко%20{}%20{}%0A%0A".format(H1, hunter, v2, victim))
+                message += ("{} {} знищив очко {} {} \n \n".format(H1, hunter, v2, victim))
             if rep == 2:
-                message += ("{}%20{}%20розтарабанив%20очко%20{}%20{}%0A%0A".format(H1, hunter, v2, victim))
+                message += ("{} {} розтарабанив очко {} {} \n \n".format(H1, hunter, v2, victim))
             if rep == 3:
-                message += ("{}%20{}%20кінчив%20в%20штани%20коли%20його%20їбав%20{}%20{}%0A%0A".format(V1, victim, h1, hunter))
+                message += ("{} {} кінчив в штани коли його їбав {} {} \n \n".format(V1, victim, h1, hunter))
             if rep == 4:
-                message += ("{}%20{}%20спіткала%20анальна%20кара%20{}%20{}%0A%0A".format(V2, victim, h2, hunter))
+                message += ("{} {} спіткала анальна кара {} {} \n \n".format(V2, victim, h2, hunter))
             if rep == 5:
-                message += ("Ракета%20{}%20{}%20стрімко%20влетіла%20в%20чорну%20диру%20{}%20{}%0A%0A".format(h2, hunter, v2, victim))
+                message += ("Ракета {} {} стрімко влетіла в чорну диру {} {} \n \n".format(h2, hunter, v2, victim))
             if win_m:
-                message += ("{}%20{}%20потрапив%20в%20анальне%20рабство%20до%20{}%20{}%0A".format(V1, victim, h2, hunter))
-                message += ("Анальні%20раби%20{}%20{}:%20".format(h2, hunter))
+                message += ("{} {} потрапив в анальне рабство до {} {} \n".format(V1, victim, h2, hunter))
+                message += ("Анальні раби {} {}: ".format(h2, hunter))
                 for k in rabstvo:
-                    message += ("{},%20".format(k))
+                    message += ("{}, ".format(k))
                 message = message[:-4]
-                message += "%0A%0A"
+                message += " \n \n"
             if win_g:
                 money = []
                 potential_money = [5000, 10000, 15000, 20000, 25000, 30000, 40000, 50000, 75000, 100000]
@@ -125,30 +121,32 @@ def game(chadid, players):
                     if players3[l][0] != players3[p][0]:
                         players3[l][4] += money[numb]
                         numb += 1
-                message += ("{}%20{}%20залутав%20з%20мера%20{}$.%20Гроші%20розділені%20між%20разбойніками%0A".format(H1, hunter, str(sum(money)+max_money)))
+                message += ("{} {} залутав з мера {}$. Гроші розділені між разбойніками \n".format(H1, hunter, str(sum(money)+max_money)))
                 for l in Gangster:
-                    message += ("{}%20{}%20тепер%20має%20{}$%0A".format(players3[l][1], players3[l][0], players3[l][4]))
-                message += "%0A"
+                    message += ("{} {} тепер має {}$ \n".format(players3[l][1], players3[l][0], players3[l][4]))
+                message += " \n"
         
         def lose(hunter, victim, H1, h1, h2, H3, V1, v1, v2, V3):
             life = random.randint(1,5)
             nonlocal message
             if life == 1:
-                message += ("{}%20{}%20промазав%20своїм%20пенісом%20і%20{}%20{}%20зірвався%20та%20втік%0A%0A".format(H1, hunter, v1, victim))
+                message += ("{} {} промазав своїм пенісом і {} {} зірвався та втік \n \n".format(H1, hunter, v1, victim))
             if life == 2:
-                message += ("{}%20{}%20вдалося%20уникнути%20пеніса%20{}%20{}%0A%0A".format(V3, victim, h2, hunter))
+                message += ("{} {} вдалося уникнути пеніса {} {} \n \n".format(V3, victim, h2, hunter))
             if life == 3:
-                message += ("{}%20{}%20не%20вдалося%20впіймати%20{}%20{}%0A%0A".format(H3, hunter, v2, victim))
+                message += ("{} {} не вдалося впіймати {} {} \n \n".format(H3, hunter, v2, victim))
             if life == 4:
-                message += ('{}%20{}%20в%20останній%20момент%20використав%20"стан"%20і%20втік%20від%20{}%20{}%0A%0A'.format(V1, victim, h2, hunter))
+                message += ('{} {} в останній момент використав "стан" і втік від {} {} \n \n'.format(V1, victim, h2, hunter))
             if life == 5:
-                message += ("{}%20{}%20в%20останній%20момент%20насрав%20в%20штани%20і%20{}%20{}%20вимушений%20був%20відступити%0A%0A".format(V1, victim, h1, hunter))
+                message += ("{} {} в останній момент насрав в штани і {} {} вимушений був відступити \n \n".format(V1, victim, h1, hunter))
         def result():
-            for h in range(len(mm)):
-                if mm[h]['name'] == players[p]:
-                    mm[h]['kills'] = mm[h]['kills'] + 1
-                if mm[h]['name'] == players[i]:
-                    mm[h]['lose'] = mm[h]['lose'] + 1
+            mm[players[p]]['kills'] += 1
+            mm[players[i]]['lose'] += 1
+            # for h in range(len(mm)):
+            #     if mm[h]['name'] == players[p]:
+            #         mm[h]['kills'] = mm[h]['kills'] + 1
+            #     if mm[h]['name'] == players[i]:
+            #         mm[h]['lose'] = mm[h]['lose'] + 1
         countPlayer2 = []
         for p in countPlayer:
             countPlayer2.append(p)
@@ -195,7 +193,7 @@ def game(chadid, players):
 
                 if players3[p][1] == "Мер":
                     if players3[i][1] == "Мєнт":
-                        message += ("Мер%20{}%20помітив мєнта%20{}%0A".format(players[p], players[i]))
+                        message += ("Мер {} помітив мєнта {} \n".format(players[p], players[i]))
                         die = random.randint(1,2)
                         if p in countPlayer2:
                             countPlayer2.remove(p)
@@ -216,12 +214,12 @@ def game(chadid, players):
                                     countPlayer2.remove(i)
                                 result()
                             else:
-                                message += ("Меру%20{}%20не%20вистачило%20авторитета%20скористатися%20очком%20мєнта%20{}%0A%0A".format(players[p], players[i]))
+                                message += ("Меру {} не вистачило авторитета скористатися очком мєнта {} \n \n".format(players[p], players[i]))
                         else:
                             lose(players[p], players[i], "Мер", "мер", "мера", "Меру", "Мєнт", "мєнт", "мєнта", "Мєнту")
                 if players3[p][1] == "Мєнт":
                     if players3[i][1] == "Разбойнік":
-                        message += ("Мєнт%20{}%20помітив разбойніка%20{}%0A".format(players[p], players[i]))
+                        message += ("Мєнт {} помітив разбойніка {} \n".format(players[p], players[i]))
                         die = random.randint(1,2)
                         if p in countPlayer2:
                             countPlayer2.remove(p)
@@ -237,31 +235,31 @@ def game(chadid, players):
                                 rands = random.choice(potential_money)
                                 if rands < players3[i][4]:
                                     players3[i][4] -= rands
-                                    message += ("Разбойнік%20{}%20виплатив%20взятку%20мєнту%20{}%20в%20розмірі%20{}$%0A".format(players[i], players[p], rands))
+                                    message += ("Разбойнік {} виплатив взятку мєнту {} в розмірі {}$ \n".format(players[i], players[p], rands))
                                     rands2 = random.randint(1,10)
                                     if rands2 == 1:
-                                        message += ("Мєнт%20{}%20наїбав%20разбойніка%20{}%20і%20виїбав%20його%20в%20сраку%0A%0A".format(players[p], players[i]))
+                                        message += ("Мєнт {} наїбав разбойніка {} і виїбав його в сраку \n \n".format(players[p], players[i]))
                                         players3[i][2] = "Died"
                                         countPlayer.remove(i)
                                         Gangster.remove(i)
                                         if len(Mer) != 0:
                                             avtoritet_changable -= 1
                                             message = message[:-3]
-                                            message += ("Авторитет%20мера%20падає%0A%0A")
+                                            message += ("Авторитет мера падає \n \n")
                                         if i in countPlayer2:
                                             countPlayer2.remove(i)
                                         result()
                                     else:
-                                        message +="%0A"
+                                        message +=" \n"
                                 else:
-                                    message += ("Разбойніку%20{}%20не%20вистачило%20коштів%20на%20взятку%20мєнту%20{},%20тому%20його%20спіткала%20анальна%20кара.%20Розмір%20взятки%20{}$%0A%0A".format(players[i], players[p], rands))
+                                    message += ("Разбойніку {} не вистачило коштів на взятку мєнту {}, тому його спіткала анальна кара. Розмір взятки {}$ \n \n".format(players[i], players[p], rands))
                                     players3[i][2] = "Died"
                                     countPlayer.remove(i)
                                     Gangster.remove(i)
                                     if len(Mer) != 0:
                                         avtoritet_changable -= 1
                                         message = message[:-3]
-                                        message += ("Авторитет%20мера%20падає%0A%0A")
+                                        message += ("Авторитет мера падає \n \n")
                                     if i in countPlayer2:
                                         countPlayer2.remove(i)
                                     result()
@@ -269,7 +267,7 @@ def game(chadid, players):
                                 win(players[p], players[i], "Мєнт", "мєнт", "мєнта", "Разбойнік", "Разбойніка", "разбойніка", False, False)
                                 if len(Mer) != 0:
                                     message = message[:-3]
-                                    message += ("Авторитет%20мера%20падає%0A%0A")
+                                    message += ("Авторитет мера падає \n \n")
                                     avtoritet_changable -= 1
                                 players3[i][2] = "Died"
                                 countPlayer.remove(i)
@@ -281,7 +279,7 @@ def game(chadid, players):
                             lose(players[p], players[i], "Мєнт", "мєнт", "мєнта", "Мєнту", "Разбойнік", "разбойнік", "разбойніка", "Разбойніку")
                 if players3[p][1] == "Разбойнік":
                     if players3[i][1] == "Мер":
-                        message += ("Разбойнік%20{}%20помітив мера%20{}%0A".format(players[p], players[i]))
+                        message += ("Разбойнік {} помітив мера {} \n".format(players[p], players[i]))
                         die = random.randint(1,2)
                         if p in countPlayer2:
                             countPlayer2.remove(p)
@@ -291,7 +289,7 @@ def game(chadid, players):
                                 players3[c][3] = players3[c][3] - 1
                         if die == 1:
                             if len(rabstvo) != 0:
-                                message += ("Мер%20{}%20переодягнувся%20в%20мєнта%20і%20втік.%20Замість%20нього%20разбойнік%20{}%20трахнув%20раба%20{}%0A%0A".format(players[i],players[p],rabstvo[0]))
+                                message += ("Мер {} переодягнувся в мєнта і втік. Замість нього разбойнік {} трахнув раба {} \n \n".format(players[i],players[p],rabstvo[0]))
                                 rabstvo.remove(rabstvo[0])
                             else:
                                 players3[i][2] = "Died"
@@ -311,7 +309,7 @@ def game(chadid, players):
                     for c in range(3):
                         if players3[r][c] == "Мер" and players3[r][c+1] == "Died" and lifeMer == 1 and rand == 1:
                             players3[r][c+1] = None
-                            message += ("Мер%20{}%20платить%20за%20востановлєніє%20свого%20очка%20і%20повертається%20до%20гри%0A%0A".format(players[r]))
+                            message += ("Мер {} платить за востановлєніє свого очка і повертається до гри \n \n".format(players[r]))
                             countPlayer.append(r)
                             lifeMer = 0
             if countPlayer2 == None or len(cho) == 1 or len(countPlayer2) == 2:
@@ -321,26 +319,29 @@ def game(chadid, players):
         if np.count_nonzero("Died" == players3['died']) >= (len(players) / 2) :
             for p in range(len(players)):
                 if players3[p][2] != "Died":
-                    for h in range(len(mm)):
-                        if mm[h]['name'] == players[p]:
-                            mm[h]['wins'] = mm[h]['wins'] + 1
-                            if players3[p][1] == "Разбойнік":
-                                mm[h]['money'] = mm[h]['money'] + players3[p][4]
-                            break
+                    mm[players[p]]['wins'] += 1
+                    if players3[p][1] == "Разбойнік":
+                        mm[players[p]]['money'] = mm[players[p]]['money'] + players3[p][4]
+                    # for h in range(len(mm)):
+                    #     if mm[h]['name'] == players[p]:
+                    #         mm[h]['wins'] = mm[h]['wins'] + 1
+                    #         if players3[p][1] == "Разбойнік":
+                    #             mm[h]['money'] = mm[h]['money'] + players3[p][4]
+                    #         break
             dat.update_one({'id': chadid},{ "$set": { 'members': mm } })
             bot.send_message(chadid, message)
             message = ""
             for p in range(len(players)):
                 if players3[p][2] != "Died":
                     if players3[p][1] == "Разбойнік" and players3[p][4] != 0:
-                        message += ("{}%20{}%20зберіг%20своє%20очко%20та%20{}$%0A".format(players3[p][1], players[p], players3[p][4]))
+                        message += ("{} {} зберіг своє очко та {}$ \n".format(players3[p][1], players[p], players3[p][4]))
                     else:
-                        message += ("{}%20{}%20зберіг%20своє%20очко%20та%20виграв%0A".format(players3[p][1], players[p]))
+                        message += ("{} {} зберіг своє очко та виграв \n".format(players3[p][1], players[p]))
                         if players3[p][1] == "Мер" and len(rabstvo) != 0:
                             for j in rabstvo:
-                                message += ("{},%20".format(j))
+                                message += ("{}, ".format(j))
                             message = message[:-4]
-                            message += ("%20залишилися(залишився)%20в%20рабстві%20мера%20{}%0A".format(players[p]))
+                            message += (" залишилися(залишився) в рабстві мера {} \n".format(players[p]))
             bot.send_message(chadid, message)
             break
             return
@@ -348,6 +349,93 @@ def game(chadid, players):
             raund()
 
 
+def top(chatid):
+    mm = dat.find_one({'id': chatid})['members']
+    top_wins = ['Ніхто','Ніхто','Ніхто']
+    top_kills = ['Ніхто','Ніхто','Ніхто']
+    top_lose = ['Ніхто','Ніхто','Ніхто']
+    top_money = ['Ніхто','Ніхто','Ніхто']
+    for i in mm:
+        wins = True
+        kills = True
+        lose = True
+        money = True
+        for t in range(len(top_wins)):
+            if wins:
+                if top_wins[t] != 'Ніхто':
+                    if top_wins[t]['wins'] < i['wins']:
+                        if t == 0:
+                            top_wins[t+2] = top_wins[t+1]
+                            top_wins[t+1] = top_wins[t]
+                            top_wins[t] = i
+                            wins = False
+                        elif t == 1:
+                            top_wins[t+1] = top_wins[t]
+                            top_wins[t] = i
+                            wins = False
+                        else:
+                            top_wins[t] = i
+                            wins = False
+                else:
+                    top_wins[t] = i
+                    wins = False
+            if kills:
+                if top_kills[t] != 'Ніхто':
+                    if top_kills[t]['kills'] < i['kills']:
+                        if t == 0:
+                            top_kills[t+2] = top_kills[t+1]
+                            top_kills[t+1] = top_kills[t]
+                            top_kills[t] = i
+                            kills = False
+                        elif t == 1:
+                            top_kills[t+1] = top_kills[t]
+                            top_kills[t] = i
+                            kills = False
+                        else:
+                            top_kills[t] = i
+                            kills = False
+                else:
+                    top_kills[t] = i
+                    kills = False
+            if lose:
+                if top_lose[t] != 'Ніхто':
+                    if top_lose[t]['lose'] < i['lose']:
+                        if t == 0:
+                            top_lose[t+2] = top_lose[t+1]
+                            top_lose[t+1] = top_lose[t]
+                            top_lose[t] = i
+                            lose = False
+                        elif t == 1:
+                            top_lose[t+1] = top_lose[t]
+                            top_lose[t] = i
+                            lose = False
+                        else:
+                            top_lose[t] = i
+                            lose = False
+                else:
+                    top_lose[t] = i
+                    lose = False
+            if money:
+                if top_money[t] != 'Ніхто':
+                    if top_money[t]['money'] < i['money']:
+                        if t == 0:
+                            top_money[t+2] = top_money[t+1]
+                            top_money[t+1] = top_money[t]
+                            top_money[t] = i
+                            money = False
+                        elif t == 1:
+                            top_money[t+1] = top_money[t]
+                            top_money[t] = i
+                            money = False
+                        else:
+                            top_money[t] = i
+                            money = False
+                else:
+                    top_money[t] = i
+                    money = False
+    
+    return top_wins, top_kills, top_lose, top_money
+            
 
 
 
@@ -362,7 +450,7 @@ def message_to(message):
             'status': 1,
             'g_status': 0,
             'mem_to_game': [],
-            'members': []
+            'members': {}
         }
         dat.insert_one(fields)
     else:
@@ -402,7 +490,7 @@ def message_to(message):
                 mes_min = ["Шо самий умний?", "В жопу свій мінус засунь", "ти довбойоб?", "мінуси тільки підари ставлять", "ще раз мінус поставиш - я приїду і виїбу тебе в очко"]
                 minus = ['-', 'мінус', 'Мінус', 'Минус', 'минус', 'minus', 'Minus']
                 if message.text in minus:
-                    bot.send_message(chat_id=message.chat.id, text=random.choice(mes_min))
+                    bot.send_message(reply_to_message_id=message.id, chat_id=message.chat.id, text=random.choice(mes_min))
                 if message.text in messages:
                     mem = dat.find_one({'id': message.chat.id})['mem_to_game']
                     if message.from_user.username not in mem:
@@ -410,7 +498,7 @@ def message_to(message):
                         dat.update_one({'id': message.chat.id},{ "$set": { 'mem_to_game': mem } })
                         bot.send_message(chat_id=message.chat.id, text='@{} бере участь в грі'.format(message.from_user.username))
                     else:
-                        bot.send_message(chat_id=message.chat.id, text='@{}, ти вже приймаєш участь в грі'.format(message.from_user.username))
+                        bot.send_message(chat_id=message.chat.id, reply_to_message_id=message.id, text='Ти вже приймаєш участь в грі')
                 if message.text == '/stop'or message.text == '/stop@BogdanKarmanBot':
                     dat.update_one({'id': message.chat.id},{ "$set": { 'mem_to_game': [] } })
                     dat.update_one({'id': message.chat.id},{ "$set": { 'g_status': 0 } })
@@ -435,7 +523,19 @@ def message_to(message):
                         timechat.pop(message.chat.id)
                     else:
                         bot.send_message(chat_id=message.chat.id, text='Мало гравців(Мінімум 2)')
+            if message.text == '/top3' or message.text == '/top3@BogdanKarmanBot': ## top3
+                top_w, top_k, top_l, top_m =top(message.chat.id)
+                bot.send_message(chat_id=message.chat.id,test='Топ 3 побідітєлєй:\n1. {} виграв {} раз(a).\n2. {} виграв {} раз(a).\n3. {} виграв {} раз(a).'.format(list(top_w.keys())[0], top_w[0]['wins'] , list(top_w.keys())[1], top_w[1]['wins'],list(top_w.keys())[2], top_w[2]['wins']))
+                bot.send_message(chat_id=message.chat.id,test='Топ 3 анальних винищувачів:\n1. {} знищив {} анусів.\n2. {} знищив {} анусів.\n3. {} знищив {} анусів.'.format(list(top_k.keys())[0], top_k[0]['kills'] , list(top_k.keys())[1], top_k[1]['kills'],list(top_k.keys())[2], top_k[2]['kills']))
+                bot.send_message(chat_id=message.chat.id,test='Три самі пасивні гея:\n1. {} втратив анальну дєвствєнность {} раз(a).\n2. {} втратив анальну дєвствєнность {} раз(a).\n3. {} втратив анальну дєвствєнность {} раз(a).'.format(list(top_l.keys())[0], top_l[0]['lose'] , list(top_l.keys())[1], top_l[1]['lose'],list(top_l.keys())[2], top_l[2]['lose']))
+                bot.send_message(chat_id=message.chat.id,test='Топ 3 магната:\n1. {} - {}$ \n2. {} - {}$ \n3. {} - {}$ '.format(list(top_m.keys())[0], top_m[0]['money'] , list(top_m.keys())[1], top_m[1]['money'],list(top_m.keys())[2], top_m[2]['money']))
 
+            if message.text == '/statistic' or message.text == '/statistic@BogdanKarmanBot':
+                mm = dat.find_one({'id': message.chat.id})['members']
+                if  mm.__contains__(message.from_user.username ):
+                    bot.send_message(chat_id=message.chat.id, text='Статистика @{}:\n Виграв ігор - {} \nКількість знищених ворожих анусів - {} \nКількість разів коли втратив анальну дєвствєнность - {} \nЗагальна кількість виграних грошей - {}$'.format(message.from_user.username, mm[message.from_user.username]['wins'],mm[message.from_user.username]['kills'], mm[message.from_user.username]['lose'], mm[message.from_user.username]['money']))
+                else:
+                    bot.send_message(reply_to_message_id=message.id, chat_id=message.chat.id, text='В тебе немає статистики')
         else:
             if message.text == '/on' or message.text == '/on@BogdanKarmanBot':
                 dat.update_one({'id': message.chat.id},{ "$set": { 'status': 1 } })
