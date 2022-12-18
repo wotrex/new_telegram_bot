@@ -525,10 +525,10 @@ def message_to(message):
                         bot.send_message(chat_id=message.chat.id, text='Мало гравців(Мінімум 2)')
             if message.text == '/top3' or message.text == '/top3@BogdanKarmanBot': ## top3
                 top_w, top_k, top_l, top_m =top(message.chat.id)
-                bot.send_message(chat_id=message.chat.id,test='Топ 3 побідітєлєй:\n1. {} виграв {} раз(a).\n2. {} виграв {} раз(a).\n3. {} виграв {} раз(a).'.format(list(top_w.keys())[0], top_w[0]['wins'] , list(top_w.keys())[1], top_w[1]['wins'],list(top_w.keys())[2], top_w[2]['wins']))
-                bot.send_message(chat_id=message.chat.id,test='Топ 3 анальних винищувачів:\n1. {} знищив {} анусів.\n2. {} знищив {} анусів.\n3. {} знищив {} анусів.'.format(list(top_k.keys())[0], top_k[0]['kills'] , list(top_k.keys())[1], top_k[1]['kills'],list(top_k.keys())[2], top_k[2]['kills']))
-                bot.send_message(chat_id=message.chat.id,test='Три самі пасивні гея:\n1. {} втратив анальну дєвствєнность {} раз(a).\n2. {} втратив анальну дєвствєнность {} раз(a).\n3. {} втратив анальну дєвствєнность {} раз(a).'.format(list(top_l.keys())[0], top_l[0]['lose'] , list(top_l.keys())[1], top_l[1]['lose'],list(top_l.keys())[2], top_l[2]['lose']))
-                bot.send_message(chat_id=message.chat.id,test='Топ 3 магната:\n1. {} - {}$ \n2. {} - {}$ \n3. {} - {}$ '.format(list(top_m.keys())[0], top_m[0]['money'] , list(top_m.keys())[1], top_m[1]['money'],list(top_m.keys())[2], top_m[2]['money']))
+                bot.send_message(chat_id=message.chat.id,text='Топ 3 побідітєлєй:\n1. {} виграв {} раз(a).\n2. {} виграв {} раз(a).\n3. {} виграв {} раз(a).'.format(list(top_w.keys())[0], top_w[0]['wins'] , list(top_w.keys())[1], top_w[1]['wins'],list(top_w.keys())[2], top_w[2]['wins']))
+                bot.send_message(chat_id=message.chat.id,text='Топ 3 анальних винищувачів:\n1. {} знищив {} анусів.\n2. {} знищив {} анусів.\n3. {} знищив {} анусів.'.format(list(top_k.keys())[0], top_k[0]['kills'] , list(top_k.keys())[1], top_k[1]['kills'],list(top_k.keys())[2], top_k[2]['kills']))
+                bot.send_message(chat_id=message.chat.id,text='Три самі пасивні гея:\n1. {} втратив анальну дєвствєнность {} раз(a).\n2. {} втратив анальну дєвствєнность {} раз(a).\n3. {} втратив анальну дєвствєнность {} раз(a).'.format(list(top_l.keys())[0], top_l[0]['lose'] , list(top_l.keys())[1], top_l[1]['lose'],list(top_l.keys())[2], top_l[2]['lose']))
+                bot.send_message(chat_id=message.chat.id,text='Топ 3 магната:\n1. {} - {}$ \n2. {} - {}$ \n3. {} - {}$ '.format(list(top_m.keys())[0], top_m[0]['money'] , list(top_m.keys())[1], top_m[1]['money'],list(top_m.keys())[2], top_m[2]['money']))
 
             if message.text == '/statistic' or message.text == '/statistic@BogdanKarmanBot':
                 mm = dat.find_one({'id': message.chat.id})['members']
