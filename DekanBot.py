@@ -8,8 +8,21 @@ bot = telebot.TeleBot('1061329648:AAFzLR4YTveVjLFSZb6cGcy5ze2TZRw8fbU')
 db_client = pymongo.MongoClient("mongodb+srv://wotrex:i98wbdz9@bohdanbot.rnchtwf.mongodb.net/?retryWrites=true&w=majority")
 dat = db_client['BohdanBot']['Chats']
 
+timechat = {}
 
-
+def mytimer(chatid):
+    # if dat.find_one({'id': chatid})['status'] == 1 and dat.find_one({'id': chatid})['g_status'] == 1:
+    if len(dat.find_one({'id': chatid})['mem_to_game']) >= 2:
+        game(chatid, dat.find_one({'id': chatid})['mem_to_game'])
+        dat.update_one({'id': chatid},{ "$set": { 'mem_to_game': [] } })
+        dat.update_one({'id': chatid},{ "$set": { 'g_status': 0 } })
+        timechat.pop(chatid)
+    else:
+        dat.update_one({'id': chatid},{ "$set": { 'mem_to_game': [] } })
+        dat.update_one({'id': chatid},{ "$set": { 'g_status': 0 } })
+        bot.send_message(chat_id=chatid, text='Достатня кількість учасників не набралась, гру відмінено')
+        timechat.pop(chatid)
+       
 def game(chadid, players):
     players3 = np.zeros((0), dtype = [('name', object),('role', object),('died', object),('count', int), ('money', int)])
     mm = dat.find_one({'id': chadid})['members']
@@ -380,7 +393,10 @@ def message_to(message):
             if dat.find_one({'id': message.chat.id})['g_status'] == 0:
                 if message.text == '/game' or message.text == '/game@BogdanKarmanBot':
                     dat.update_one({'id': message.chat.id},{ "$set": { 'g_status': 1 } })
-                    bot.send_message(chat_id=message.chat.id, text='Почалася гра "Мер, Мєнти та Разбойніки".\n\nПравила гри:\nМЕР(Мер може бути тільки один) повинен трахнути МЄНТІВ, МЄНТИ повинні трахнути РОЗБІЙНИКІВ, РОЗБІЙНИКИ повинні трахнути МЕРА. Кожен повинен зберегти своє очко. Хто зберіг своє очко - той виграв. Якщо кількість гравців буде більше 5, то мер отримує шанс 1 раз воскреснути. Все відбувається рандомно. Ви можете тіки подивитись результати.\n\nГра автоматично почнеться або буде припинена через 2 години!!!\n\nЩоб прийняти участь в грі відправте: {} .\n\nЩоб почати гру(коли наберуться учасники) відправте: /start\n\nЩоб закінчити гру: /stop\n\n/list - подивиться список учасників\n\n/statistic - подивиться статискику\n\n/top3 - подивиться топ3.'.format('"Плюс"'))
+                    bot.send_message(chat_id=message.chat.id, text='Почалася гра "Мер, Мєнти та Разбойніки".\n\nПравила гри:\nМЕР(Мер може бути тільки один) повинен трахнути МЄНТІВ, МЄНТИ повинні трахнути РОЗБІЙНИКІВ, РОЗБІЙНИКИ повинні трахнути МЕРА. Кожен повинен зберегти своє очко. Хто зберіг своє очко - той виграв. Якщо кількість гравців буде більше 5, то мер отримує шанс 1 раз воскреснути. Все відбувається рандомно. Ви можете тіки подивитись результати.\n\nГра автоматично почнеться або буде припинена через 40 хвилин!!!\n\nЩоб прийняти участь в грі відправте: {} .\n\nЩоб почати гру(коли наберуться учасники) відправте: /start\n\nЩоб закінчити гру: /stop\n\n/list - подивиться список учасників\n\n/statistic - подивиться статискику\n\n/top3 - подивиться топ3.'.format('"Плюс"'))
+                    time = threading.Timer(2400.0, mytimer, [message.chat.id])
+                    time.start()
+                    timechat[message.chat.id] = time
             else:
                 messages = ['+', 'go','Go', 'го', 'Го', 'plus', 'Plus', 'плюс', 'Плюс']
                 mes_min = ["Шо самий умний?", "В жопу свій мінус засунь", "ти довбойоб?", "мінуси тільки підари ставлять", "ще раз мінус поставиш - я приїду і виїбу тебе в очко"]
@@ -398,6 +414,8 @@ def message_to(message):
                 if message.text == '/stop'or message.text == '/stop@BogdanKarmanBot':
                     dat.update_one({'id': message.chat.id},{ "$set": { 'mem_to_game': [] } })
                     dat.update_one({'id': message.chat.id},{ "$set": { 'g_status': 0 } })
+                    timechat[message.chat.id].cancel()
+                    timechat.pop(message.chat.id)
                     bot.send_message(chat_id=message.chat.id, text='Гру відмінено')
                 if message.text == '/list'or message.text == '/list@BogdanKarmanBot':
                     mem = dat.find_one({'id': message.chat.id})['mem_to_game']
@@ -413,6 +431,8 @@ def message_to(message):
                         game(message.chat.id, dat.find_one({'id': message.chat.id})['mem_to_game'])
                         dat.update_one({'id': message.chat.id},{ "$set": { 'mem_to_game': [] } })
                         dat.update_one({'id': message.chat.id},{ "$set": { 'g_status': 0 } })
+                        timechat[message.chat.id].cancel()
+                        timechat.pop(message.chat.id)
                     else:
                         bot.send_message(chat_id=message.chat.id, text='Мало гравців(Мінімум 2)')
 
