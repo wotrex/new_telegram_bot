@@ -394,7 +394,7 @@ def message_to(message):
                 if message.text == '/game' or message.text == '/game@BogdanKarmanBot':
                     dat.update_one({'id': message.chat.id},{ "$set": { 'g_status': 1 } })
                     bot.send_message(chat_id=message.chat.id, text='Почалася гра "Мер, Мєнти та Разбойніки".\n\nПравила гри:\nМЕР(Мер може бути тільки один) повинен трахнути МЄНТІВ, МЄНТИ повинні трахнути РОЗБІЙНИКІВ, РОЗБІЙНИКИ повинні трахнути МЕРА. Кожен повинен зберегти своє очко. Хто зберіг своє очко - той виграв. Якщо кількість гравців буде більше 5, то мер отримує шанс 1 раз воскреснути. Все відбувається рандомно. Ви можете тіки подивитись результати.\n\nГра автоматично почнеться або буде припинена через 40 хвилин!!!\n\nЩоб прийняти участь в грі відправте: {} .\n\nЩоб почати гру(коли наберуться учасники) відправте: /start\n\nЩоб закінчити гру: /stop\n\n/list - подивиться список учасників\n\n/statistic - подивиться статискику\n\n/top3 - подивиться топ3.'.format('"Плюс"'))
-                    time = threading.Timer(60.0, mytimer, [message.chat.id])
+                    time = threading.Timer(2400.0, mytimer, [message.chat.id])
                     time.start()
                     timechat[message.chat.id] = time
             else:
