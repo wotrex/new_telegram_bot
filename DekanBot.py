@@ -326,8 +326,8 @@ def game(chadid, players):
                     #         break
             try:
                 dat.update_one({'id': chadid},{ "$set": { 'members': mm } })
-            except e:
-                print(e)
+            except:
+                pass
             bot.send_message(chadid, message)
             message = ""
             for p in range(len(players)):
