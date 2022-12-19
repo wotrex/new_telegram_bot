@@ -106,7 +106,7 @@ def game(chadid, players):
                 message += ("{} @{} потрапив в анальне рабство до {} @{} \n".format(V1, victim, h2, hunter))
                 message += ("Анальні раби {} @{}: ".format(h2, hunter))
                 for k in rabstvo:
-                    message += ("{}, ".format(k))
+                    message += ("@{}, ".format(k))
                 message = message[:-4]
                 message += " \n \n"
             if win_g:
